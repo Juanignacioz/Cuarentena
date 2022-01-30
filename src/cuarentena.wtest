@@ -1,0 +1,179 @@
+import cuarentena.*
+
+describe "cuerantena" {
+
+/*
+Todos los objetos necesarios se asumen como instancias de una clase. 
+Si el diseño de tu solución utiliza objetos bien conocidos (definidos como object) en algunos casos 
+entonces se debe remover la declaración de la variable y la línea en que se sugiere la instanciación
+para usar directamente el objeto conocido
+*/
+
+
+		
+    var programador = new NoEscencial(faseParaTrabajar = 3, base= 80000,bono = 20000)
+    var docente  = new NoEscencial(faseParaTrabajar = 5, base = 15000, bono = 5000)
+    var panadero = new Escencial(base = 30000 , bono = 20000, faseParaTrabajar = 3)
+    var medico = new Sanitario(base = 60000, bono = 40000, faseParaTrabajar = 3)
+    
+    var milena = new Persona(edad = 25, enfermedadesPreexistentes = true)
+    var nicolas = new Persona(edad = 19 , enfermedadesPreexistentes = false)
+    var mirta = new Persona(edad =67, enfermedadesPreexistentes = false) 
+    
+   
+    var perezGarcia = new Familia()
+    
+   
+    const compra = new Compra()
+	const trabajar = new Trabajar()
+	const caminar = new Caminar()
+	const ejercicio = new Ejercicio()    
+    	 
+    	
+	fixture {
+		pandemia.fase(4)
+		milena.agregarTrabajo(programador)
+		
+		nicolas.agregarTrabajo(panadero)
+		mirta.agregarTrabajo(medico)
+		
+		
+		perezGarcia.agregar(milena)
+		perezGarcia.agregar(nicolas)
+		perezGarcia.agregar(mirta)
+	}
+	
+
+ 	
+	test "punto 1.1: ganancia de persona" {
+		
+		
+		milena.agregarTrabajo(docente)
+		assert.equals(docente.salario(), 15000)
+		assert.equals(programador.salario() , 100000)
+		assert.equals(milena.sueldo(), 115000)
+		//------------------------------------
+	
+		assert.equals(nicolas.sueldo(), 35000)
+	
+		assert.equals(mirta.sueldo(), 75000)
+		//TODO: verificar que milena gana 115000  		
+		//TODO: verificar que nicolas gana 35000 
+		//TODO: verificar que mirta gana 75000 
+	}
+		
+	test "punto 1.2: ganancia de familia" {
+		milena.agregarTrabajo(docente)
+		assert.equals(perezGarcia.sueldoFamiliar(), 225000)
+		//TODO: verficiar que la familia perezGarcia gana  225000 
+	}
+
+
+ 
+	test "punto 1.3: miembros en riesgos" {
+		milena.agregarTrabajo(docente)
+		assert.equals(perezGarcia.estaAislada(),false)		//TODO: verificar que la familia perezGarcia NO está aislada 
+		const familiaDeSoloMirta = new Familia()//TODO: construir/obtener una Familia con mirta como unica integrante
+		//TODO: verificar que la familia familiaDeSoloMirta SI está aislada 
+		familiaDeSoloMirta.agregar(mirta)
+		assert.equals(familiaDeSoloMirta.estaAislada(), true)
+	}
+
+
+	
+	test "punto 1.4: trabajos principales" {
+		milena.agregarTrabajo(docente)
+		perezGarcia.TrabajosPrincipales()//cargo los trabajos principales de los perez garcia
+		assert.equals(perezGarcia.trabajosPrincipales().contains(programador),true)
+		assert.equals(perezGarcia.trabajosPrincipales().contains(panadero),true)
+		assert.equals(perezGarcia.trabajosPrincipales().contains(medico),true)
+		//TODO: verificar que los trabajos principales de la familia perezGarcia sean programadore, panadere y medique
+
+		
+	}
+
+
+	test "punto 1.5: trabajadores inactivos" {
+		perezGarcia.cargarTrabajadoresInactivos()
+		assert.equals(perezGarcia.trabajadoresInactivos().size(), 0)
+		//TODO: verificar que no hay integrantes inactivos de la familia perezGarcia 
+		pandemia.fase(1)
+		//TODO: cambiar la pandemia a fase 1 
+		perezGarcia.cargarTrabajadoresInactivos()
+		assert.equals(perezGarcia.trabajadoresInactivos().contains(milena), true)
+		assert.equals(perezGarcia.trabajadoresInactivos().size(), 1)
+		//TODO verificar que milena es la unica trabajadora inactiva de la familia perezGarcia
+	}
+
+	
+ 		
+//	test "punto 2.1: puede realizar salida" {
+//				 		
+//		//TODO: verificar que mirta NO puede salir a comprar
+//		assert.equals(compra.puedenSalir(mirta), false)
+//		//TODO: verificar que nicolas SI puede salir a comprar
+//		assert.equals(compra.puedenSalir(nicolas), true)
+//		//TODO: verificar que nicolas SI puede salir a ejercitarse
+//		assert.equals(ejercicio.puedenSalir(nicolas), true)
+//		//TODO: verificar que nicolas SI puede salir a caminar
+//		assert.equals(caminar.puedenSalir(nicolas), true)
+//		//TODO: verificar que nicolas SI puede salir a trabajar
+//		assert.equals(trabajar.puedenSalir(nicolas), true)
+//		
+//
+//		//TODO: pasar la pandemia a fase 3
+//		pandemia.fase(3)
+//		//TODO: verificar que nicolas SI puede salir a comprar
+//		
+//		//TODO: verificar que nicolas NO puede salir a ejercitarse
+//		
+//		//TODO: verificar que nicolas NO puede salir a caminar
+//		
+//		//TODO: verificar que nicolas SI puede salir a trabajar
+//		
+//	}
+
+
+	
+	//test "punto 2.2, 2.3 y 2.4.1: salir a pasear ok " {
+		
+		//TODO hacer que nicolas salga a comprar
+		)
+		//TODO hacer que nicolas salga a trabajar
+		
+		//TODO hacer que nicolas salga a comprar //aca deben haber querido poner caminar u otro , porque ya puse salir a comprar, aunque no hay problema puede ser repetido
+		
+		//TODO verificar que las salidas de nicolas son salirAComprar, salirATrabajar y salirAComprar
+		
+	}
+
+
+ 
+	//test "punto 2.2, 2.3 y 2.4.2: salir a pasear no ok" {
+		//TODO hacer que milena salga a comprar (No se puede!)
+		//TODO verificar que milena no tenga salidas
+	}
+	
+
+/* 
+	test "punto 3.1: Salida familiar ok" {
+
+		// TODO: hacer que perezGarcia salga a comprar 
+
+		//TODO: verificar que nicolas tenga la salida salirAComprar 
+		//TODO: verificar que mirta no tenga salidas
+		//TODO: verificar que milena no tenga salidas 
+	}
+*/
+/* 
+	test "punto 3.1: Salida familiar no ok" {
+		var familiaMirtaYMilena = //TODO: obtener/construir una Familia con mirta y milena como integrantes
+		
+		//TODO: hacer que la familiaMirtaYMilena salga a comprar (no se puede!)
+
+		//TODO: verificar que mirta no tenga salidas
+		//TODO: verificar que milena no tenga salidas
+	}
+*/	
+	
+}
