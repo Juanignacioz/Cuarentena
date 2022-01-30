@@ -1,52 +1,136 @@
-# Oktubre Fest
-
-[Ein Prosit!](https://www.youtube.com/watch?v=DNxE5NQXLM4)
-
-En Münich-Alemania, todos los años se festeja la Oktubrefest. Para esta gran feria de comidas, entretenimientos y mucha cerveza nos piden construir un programa en objetos que modele el comportamiento de las personas en la fiesta. 
-
-Al entrar en la fiesta se pueden encontrar enormes carpas cerveceras, en donde muchísima gente se reune a . . . bueno . . . tomar cerveza. Queremos controlar la entrada a estas carpas dependiendo de la disponibilidad de la carpa y los gustos del público.
-
-### Jarras y Carpas
-Las carpas cerveceras tienen:
-* un límite de gente admitida, 
-* algunas tienen una banda para tocar música tradicional (esto debe indicarse para cada una),
-* y por supuesto que todas venden jarras de cerveza. 
-
-De cada jarra de cerveza sabemos su capacidad en litros y de qué marca es. Cada carpa sirve jarras de cerveza de sólo una marca (que depende de cada carpa).
-
-### Personas
-De cada persona se sabe su peso, las jarras de cerveza que compró hasta el momento, si le gusta escuchar música tradicional o no, y su nivel de aguante, que es un número. Una persona está ebria si la cantidad de alcohol que ingirió multiplicado por su peso supera su aguante. 
-
-Además, de cada persona interesará saber qué marcas de cerveza le gustan. Se sabe que a los belgas les gusta solamente la cerveza con más de 4 gramos de lúpulo por litro, a los checos les gustan las cervezas de más de 8 % de graduación (ver abajo qué es la graduación de la cerveza), a los alemanes les gustan todas.
-
-### Marcas
-Existen varias marcas de cerveza. Están las marcas de cerveza rubia (como la Corona), las marcas de cerveza negra (como la Guiness), y las marcas de cerveza roja (como la Hofbräu). De cada marca se sabe su contenido de lúpulo, o sea, cuántos gramos de lúpulo por litro llevan. También se conoce el país donde se fabrica.
-
-La graduación de una cerveza es su porcentaje de alcohol en volumen. P.ej. una cerveza de 10 % de graduación, tendrá 0.1 litro de alcohol por litro de cerveza: 
-* Cada marca de cerveza rubia tiene una graduación distinta. 
-* Por otro lado, la graduación de una marca de cerveza negra se calcula como el mínimo entre la graduación reglamentaria y el doble de su contenido de lúpulo. La graduación reglamentaria es mundial, o sea que es única para todas las marcas de cerveza negra del mundo; puede cambiar con el tiempo. 
-* La cerveza roja se fabrica con procedimientos similares a la de la cerveza negra, pero que concentran más el alcohol. Por lo tanto, la graduación de una marca de cerveza roja se calcula multiplicando el valor que correspondería a una cerveza negra con la misma configuración, por 1.25.
+# Cuarentena
 
 
-### Requerimientos
+## Aclaraciones sobre el parcial
+- El parcial es **individual** y se entrega **pusheando a este repositorio** como en las entregas anteriores. Recomendamos _ir pusheando cada cierto tiempo_ para evitar inconvenientes, lo ideal es después de cada punto resuelto.
+- No se tendrán en cuenta los commits realizados después de la hora de finalización del examen.
+- Una vez hecho el _push_ final, **verifiquen en github.com** que haya quedado la versión final. Nosotros corregiremos lo que está en github, si ustedes lo pueden ver ahí entonces nosotros también.
+- No olvidarse de **los conceptos aprendidos**: polimorfismo, delegación, buenas abstracciones, no repetir lógica, guardar vs calcular, lanzar excepción cuando un método no puede cumplir con su responsabilidad, etc. Eso es lo que se está evaluando.
+- La solución del examen consiste en la **implementación de un programa** que resuelva los requerimientos pedidos y sus **tests automatizados**.
+- Este enunciado es acompañado con un archivo `.wtest` que tiene diseñado los test a realizar. Es importante aclarar que:
+  - Estos tests se proponen para facilitar el desarrollo. Se puede diseñar otros si así se considera necesario.
+  - El conjunto de tests propuesto es suficiente para este ejercicio. No hace falta agregar nuevos, pero tampoco se prohibe hacerlo.
+  - Todos los objetos allí usados se asumen como instancias de una clase. Si el diseño de la solución utiliza objetos bien conocidos en algunos casos entonces se debe remover la declaración de la variable y la línea en que se sugiere la instanciación
+  - Según el diseño de la solución, es probable que se requiera agregar más objetos a los sugeridos en los tests
+  - Los tests están comentados de manera de poder _ir incorporándolos a medida que se avanza_ con la solución del ejercicio
 
-Se pide test y codificación completa para los siguientes requerimientos:
+## Contexto 
 
-1. Saber el **contenido de alcohol** de una jarra de cerveza. Ej: una jarra de cerveza de medio litro de la marca _Hofbräu_ (suponiendo que tiene 8 % de graduación alcohólica) tiene 0.5 * 0.08 = 0.04 litros de alcohol.
+Dada la problématica de la Pandemia Covid-19 se necesita un sistema que
+permita modelar las distintas actividades que puedan realizar las personas
+que se encuentran en aislamiento obligatorio.
 
-2. Saber el **total de alcohol** que ingirió una persona (en base a las jarras de cerveza que compró).
+> Este es un sistema acotado por fines pedagógicos y no representa
+la totalidad de los casos ni la complejidad que tendría un sistema real.
 
-3. Saber si una persona **está ebria** o no.
+## Modelo inicial
 
-4. Saber si una persona **quiere entrar** a una carpa. Para esto hay que mirar si la marca de cerveza que venda la carpa le gusta a la persona y si cumple su preferencia sobre que haya o no haya música (ojo con esto: si a la persona le gusta la música tradicional tiene que haber música en la carpa, y si no le gusta, entonces no puede haber música). 
-Los alemanes, además, requieren que haya una cantidad par de personas en la carpa (antes de entrar ellos).
+De la **pandemia** se conoce en que **fase** está, que es un número entre 1 y 5 
+que puede ser modificado por el usuario del sistema. 
+Este valor es consultado por distintos objetos del sistema para tomar decisiones.
 
-5. Saber si una carpa **deja ingresar** a una persona, o sea, si dejándola entrar no supera su límite de personas y la persona no está ebria.
+De una **persona** se conoce su **edad**, si posee **enfermedades preexistentes** y todos sus **trabajos**.
 
-6. Saber si una persona **puede entrar** a una carpa, es decir, si quiere entrar a la carpa y la carpa lo deja entrar.
+De los **trabajos** interesa saber:
+- Si se **pueden realizar presencialmente** o no (eso depende del tipo de trabajo) 
+- El **salario** se calcula como la suma de un número **base** más un **extra**. 
+El **extra** es un cálculo que se realiza a partir un número **bono**. 
+Tanto la **base** como el **bono** son números que se determinan para cada trabajo, 
+mientras que la manera en que se usa el bono para calcular el extra depende del tipo de trabajo.
 
-7. Hacer que una persona efectivamente **entre** a una carpa. Si una persona quiere ingresar a una carpa y no puede por la falla de alguna condición resuelta en los puntos anteriores, generar un error. Si entra, debe actualizarse la capacidad de la carpa.
 
-8. Saber cuantos **ebrios empedernidos** hay dentro de una carpa. Los ebrios empedernidos son los ebrios que todas las jarras que compraron, son de 1 litro ó más.
+Existen los siguientes trabajos: 
+- Los **trabajos no esenciales** se pueden realizar a partir de una fase de la pandemia 
+que se indica para cada trabajo.
+El extra es el bono en el caso que el trabajo se pueda realizar presencialmente. En otro caso
+es 0.
 
-9. Saber si una persona **es patriota**, o sea, si todas las jarras de cerveza que compró son del país del que proviene. P.ej. un alemán es patriota si todas las jarras de cerveza que compró son alemanas.
+- Los **trabajos esenciales** son aquellos que se pueden desarrollar presencialmente 
+en cualquier fase de la pandemia. 
+El extra se calcula como ` bono * ((5 - __fase actual de la pandemia__) / 4 )` 
+
+- Los **trabajos sanitarios** son trabajos esenciales que reciben $5000 más de extra 
+  que un trabajo esencial normal.
+
+Una **familia** está compuesta por varias **personas**. 
+
+### Estos son casos de ejemplos que pueden ser utilizados en los tests:
+
+- Trabajos No esenciales:
+    - Programador/a : Se puede realizar a partir de la fase 3, paga 80000 de base y 20000 de bono   
+    - Docente : Se puede realizar a partir de la fase 5, paga 15000 de base y 5000 de bono
+- Trabajos Esenciales
+    - Panadero/a : Paga 30000 de base y 20000 de bono
+- Trabajos Sanitarios
+    - Médico/a : Paga 60000 de base y  40000 de bono
+
+- Personas:
+    - Milena es programadora y docente, tiene 25 años y tiene enfermedades prexistentes
+    - Nicolás es panadero, tiene 19 años y no tiene enfermedades preexistenes
+    - Mirta es Médica, tiene 67 años y no tiene enfermedades preexistentes   
+
+- Familia:
+    - La familia Perez-García está compuesta por Milena, Mirta y Nicolás.
+ 
+## 1. Consultas sobre el modelo
+Nos interesa saber:
+
+1. **Cuanto gana una persona**: Es la suma de los sueldos de sus trabajos
+2. **Cuanto gana una familia**: Es la suma de los ingresos de sus integrantes
+3. **Si una familia está aislada**: Sucede cuando todos sus miembros están en riesgo. 
+Un miembro está en riesgo si tiene 65 o más años o si posee una enfermedad preexistente.
+4. **Los trabajos principales de una familia**: Es la colección formada por el trabajo principal 
+de cada integrante de la familia. El trabajo principal de una persona es aquel que le aporta 
+mayores ingresos. Se puede asumir que no hay integrantes sin trabajos. 
+5. **Los trabajadores inactivos de una familia** que son aquellos que no puedan realizar ninguno 
+de sus trabajos de manera presencial.
+
+_Atención! Prestar atención a la división de responsabilidades._  
+
+# 2. Salidas
+
+Las salidas son actividades que las personas pueden hacer o no dependiendo de varios factores específicos.
+En este sistema vamos a modelar solamente 4 actividades: __salir a comprar, trabajar, pasear o ejercitarse__.
+
+- **salir a trabajar**: La persona no debe estar en riesgo y debe poder trabajar presencialmente (resuelto en el punto anterior).
+- **salir a comprar**: La persona no debe estar en riesgo.
+- **salir a realizar ejericicio**: La persona no debe estar en riesgo y la fase de la pandemia debe ser mayor a 3.
+- **salir a caminar**: Al igual que para realizar ejercicio, la persona no debe estar en riesgo y la fase de la pandemia debe ser mayor a 3. 
+Aunque si la pandemia está en fase 5 cualquier persona puede salir a caminar (esté en riesgo o no). 
+
+_Atención! No duplicar código! Prestar atención a las ideas repetidas._
+
+Se pide:
+
+1. Saber si una persona puede realizar una salida
+2. Indicar que una persona realiza una salida: Validar que la misma se pueda realizar
+y registrar que se realizó en el caso satisfactorio.
+3. Saber el historial de salidas de una persona, manteniendo el orden y repeticiones que hagan falta.
+4. Asumiendo el escenario de ejemplo planteado al prinicipio del enunciado y  
+que la pandemia está en fase 4, escribir los siguientes tests que cubren los dos puntos anteriores.
+
+- Se le pide a Nicolás que salga a comprar, luego a trabajar y luego a comprar nuevamente. 
+Asegurarse que el historial de salidas sea una colección de tamaño 3, 
+cuyo primer elemento modele la salida a comprar, el segundo la salida a trabajar 
+y el tercero la salida a comprar     
+
+- Se le pide a Milena que salga a comprar, esta es una acción que no se 
+debería poder hacer porque ella es una persona en riesgo.  
+
+
+# 3. Salida Familiar
+
+A una **familia** se le puede solicitar que realice una **salida**. Las salidas son las mismas 
+resueltas en el punto anterior.
+
+**Todos los miembros que son capaces de realizar la salida la realizan.** Los miembros que no
+la pueden realizar simplemente no lo hacen. Sin embargo es necesario para cumplir 
+el requerimiento que **al menos uno de los integrantes** de la familia puedan llevar 
+adelante la salida. 
+
+Escribir un test en el cual se le solicita a la familia perez garcía que salga a comprar.
+En ese caso solo nicolás realiza la acción.  
+
+
+
+
